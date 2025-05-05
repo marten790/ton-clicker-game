@@ -18,14 +18,15 @@ export default function Page() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // Safe access to window.Telegram with optional chaining
       const tg = window.Telegram;
       const webApp = tg?.WebApp;
       const initData = webApp?.initDataUnsafe;
 
       setDebugDetails({
-        telegram: tg ? JSON.stringify(tg, null, 2) : '❌ Telegram not found',
-        webApp: webApp ? JSON.stringify(webApp, null, 2) : '❌ WebApp not found',
-        initDataUnsafe: initData ? JSON.stringify(initData, null, 2) : '❌ initDataUnsafe not found',
+        telegram: tg ? 'Telegram object found' : '❌ Telegram not found',
+        webApp: webApp ? 'WebApp object found' : '❌ WebApp not found',
+        initDataUnsafe: initData ? 'initDataUnsafe found' : '❌ initDataUnsafe not found',
       });
     }
   }, []);
@@ -35,7 +36,7 @@ export default function Page() {
       <div className="flex flex-col items-center justify-center h-screen text-xl font-medium text-center px-4">
         <p>Loading user data...</p>
         <p className="text-sm text-gray-500 mt-2">
-          If this doesnt load, please make sure youre opening the app from inside Telegram.
+          If this doesn&apos;t load, please make sure you&apos;re opening the app from inside Telegram.
         </p>
 
         <div className="mt-6 w-full max-w-2xl text-left text-xs space-y-4">
