@@ -11,7 +11,7 @@ export default function Page() {
       <div className="flex flex-col items-center justify-center h-screen text-xl font-medium text-center px-4">
         <p>Loading user data...</p>
         <p className="text-sm text-gray-500 mt-2">
-          If this doesn't load, please make sure you're opening the app from inside Telegram.
+          If this doesnt load, please make sure youre opening the app from inside Telegram.
         </p>
         <div className="mt-4 bg-gray-100 p-3 rounded w-full max-w-md text-xs text-left">
           <strong>Debug Log:</strong>
