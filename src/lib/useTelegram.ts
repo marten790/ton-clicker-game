@@ -37,16 +37,16 @@ export const useTelegram = () => {
 
   useEffect(() => {
     const isDev = process.env.NODE_ENV === 'development';
-
+  
     const debug = (msg: string) => {
       console.log(msg);
       setDebugLog((prev) => [...prev, msg]);
     };
-
-    if (typeof window !== 'undefined') {
+  
+    const checkTelegram = () => {
       const tg = window.Telegram;
       const webApp = tg?.WebApp;
-
+  
       debug(`window.Telegram: ${tg ? '✅ present' : '❌ missing'}`);
       debug(`window.Telegram.WebApp: ${webApp ? '✅ present' : '❌ missing'}`);
       debug(
@@ -54,7 +54,16 @@ export const useTelegram = () => {
           webApp?.initDataUnsafe ? '✅ present' : '❌ missing'
         }`
       );
-
+  
+      // ✅ Log the full object for visibility
+      if (tg) {
+        try {
+          debug(`🧠 Telegram Object: ${JSON.stringify(tg)}`);
+        } catch {
+          debug('🧠 Telegram Object: [Could not stringify]');
+        }
+      }
+  
       if (webApp?.initDataUnsafe?.user && !isDev) {
         debug('✅ Telegram user data found');
         setUser(webApp.initDataUnsafe.user);
@@ -73,8 +82,15 @@ export const useTelegram = () => {
       } else {
         debug('❌ Telegram user data not found. Open via Telegram.');
       }
+    };
+  
+    if (typeof window !== 'undefined') {
+      checkTelegram();
+      setTimeout(checkTelegram, 1000); // Retry after delay
     }
   }, []);
+  
+  
 
   return { user, initData, debugLog };
 };
