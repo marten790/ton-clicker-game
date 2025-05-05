@@ -43,35 +43,41 @@ export const useTelegram = () => {
 
   useEffect(() => {
     const isDev = process.env.NODE_ENV === 'development';
-
-    if (typeof window !== 'undefined') {
-      if (!window.Telegram || !window.Telegram.WebApp) {
-        log('❌ window.Telegram or window.Telegram.WebApp not available');
-        return;
+  
+    const checkTelegram = () => {
+      if (typeof window !== 'undefined') {
+        const tg = window.Telegram?.WebApp;
+  
+        if (!tg) {
+          log('❌ Telegram.WebApp still not available');
+          return;
+        }
+  
+        if (tg.initDataUnsafe?.user && !isDev) {
+          log('✅ Telegram user data found');
+          setUser(tg.initDataUnsafe.user);
+          setInitData(tg.initDataUnsafe);
+          tg.expand?.();
+          tg.ready?.();
+        } else if (isDev) {
+          const mockUser: TelegramUser = {
+            id: 1,
+            username: 'dev_user',
+            first_name: 'Developer',
+          };
+          log('⚠️ Using mock user in development');
+          setUser(mockUser);
+          setInitData({ user: mockUser });
+        } else {
+          log('❌ Telegram user data not found. Open via Telegram.');
+        }
       }
-
-      const tg = window.Telegram.WebApp;
-
-      if (tg.initDataUnsafe?.user && !isDev) {
-        log('✅ Telegram user data found');
-        setUser(tg.initDataUnsafe.user);
-        setInitData(tg.initDataUnsafe);
-        tg.expand?.();
-        tg.ready?.();
-      } else if (isDev) {
-        const mockUser: TelegramUser = {
-          id: 1,
-          username: 'dev_user',
-          first_name: 'Developer',
-        };
-        log('⚠️ Using mock user in development');
-        setUser(mockUser);
-        setInitData({ user: mockUser });
-      } else {
-        log('❌ Telegram user data not found. Open the app via Telegram.');
-      }
-    }
+    };
+  
+    // Retry after short delay in case Telegram object isn't ready immediately
+    setTimeout(checkTelegram, 100);
   }, []);
+  
 
   return { user, initData, debugLog };
 };
