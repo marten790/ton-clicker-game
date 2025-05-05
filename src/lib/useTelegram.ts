@@ -39,18 +39,24 @@ export const useTelegram = () => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const tg = window.Telegram?.WebApp;
-
+      
+      // ✅ Log to verify WebApp context
+      console.log('🌐 Telegram WebApp object:', tg);
+      console.log('🧾 Telegram initDataUnsafe:', tg?.initDataUnsafe);
+  
       if (tg?.initDataUnsafe?.user) {
-        console.log('✅ Found Telegram user:', tg.initDataUnsafe.user);
+        console.log('✅ Telegram user found:', tg.initDataUnsafe.user);
         setUser(tg.initDataUnsafe.user);
         setInitData(tg.initDataUnsafe);
         tg.expand?.();
         tg.ready?.();
       } else {
-        console.error('❌ Telegram user data not found. Make sure app is opened via Telegram.');
+        console.error('❌ initDataUnsafe or user not available.');
       }
     }
   }, []);
+  
+  
 
   return { user, initData };
 };
