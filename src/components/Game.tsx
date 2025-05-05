@@ -1,7 +1,7 @@
 // src/components/Game.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const Game = () => {
   const [points, setPoints] = useState(0);
