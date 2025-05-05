@@ -18,12 +18,10 @@ interface InitData {
   };
 }
 
-export {};
-
 declare global {
   interface Window {
     Telegram: {
-      WebApp: {
+      WebApp?: {
         initDataUnsafe?: InitData;
         expand?: () => void;
         ready?: () => void;
@@ -37,47 +35,46 @@ export const useTelegram = () => {
   const [initData, setInitData] = useState<InitData | null>(null);
   const [debugLog, setDebugLog] = useState<string[]>([]);
 
-  const log = (msg: string) => {
-    setDebugLog(prev => [...prev, msg]);
-  };
-
   useEffect(() => {
     const isDev = process.env.NODE_ENV === 'development';
-  
-    const checkTelegram = () => {
-      if (typeof window !== 'undefined') {
-        const tg = window.Telegram?.WebApp;
-  
-        if (!tg) {
-          log('❌ Telegram.WebApp still not available');
-          return;
-        }
-  
-        if (tg.initDataUnsafe?.user && !isDev) {
-          log('✅ Telegram user data found');
-          setUser(tg.initDataUnsafe.user);
-          setInitData(tg.initDataUnsafe);
-          tg.expand?.();
-          tg.ready?.();
-        } else if (isDev) {
-          const mockUser: TelegramUser = {
-            id: 1,
-            username: 'dev_user',
-            first_name: 'Developer',
-          };
-          log('⚠️ Using mock user in development');
-          setUser(mockUser);
-          setInitData({ user: mockUser });
-        } else {
-          log('❌ Telegram user data not found. Open via Telegram.');
-        }
-      }
+
+    const debug = (msg: string) => {
+      console.log(msg);
+      setDebugLog((prev) => [...prev, msg]);
     };
-  
-    // Retry after short delay in case Telegram object isn't ready immediately
-    setTimeout(checkTelegram, 100);
+
+    if (typeof window !== 'undefined') {
+      const tg = window.Telegram;
+      const webApp = tg?.WebApp;
+
+      debug(`window.Telegram: ${tg ? '✅ present' : '❌ missing'}`);
+      debug(`window.Telegram.WebApp: ${webApp ? '✅ present' : '❌ missing'}`);
+      debug(
+        `window.Telegram.WebApp.initDataUnsafe: ${
+          webApp?.initDataUnsafe ? '✅ present' : '❌ missing'
+        }`
+      );
+
+      if (webApp?.initDataUnsafe?.user && !isDev) {
+        debug('✅ Telegram user data found');
+        setUser(webApp.initDataUnsafe.user);
+        setInitData(webApp.initDataUnsafe);
+        webApp.expand?.();
+        webApp.ready?.();
+      } else if (isDev) {
+        const mockUser: TelegramUser = {
+          id: 1,
+          username: 'dev_user',
+          first_name: 'Developer',
+        };
+        debug('⚠️ Using mock user in development');
+        setUser(mockUser);
+        setInitData({ user: mockUser });
+      } else {
+        debug('❌ Telegram user data not found. Open via Telegram.');
+      }
+    }
   }, []);
-  
 
   return { user, initData, debugLog };
 };
