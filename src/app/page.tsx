@@ -1,68 +1,36 @@
+// src/app/page.tsx
 'use client';
 
 import { useTelegram } from '@/lib/useTelegram';
 import Game from '@/components/Game';
-import { useEffect, useState } from 'react';
 
 export default function Page() {
   const { user, debugLog } = useTelegram();
-  const [debugDetails, setDebugDetails] = useState<{
-    telegram: string;
-    webApp: string;
-    initDataUnsafe: string;
-  }>({
-    telegram: 'Not available',
-    webApp: 'Not available',
-    initDataUnsafe: 'Not available',
-  });
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Safe access to window.Telegram with optional chaining
-      const tg = window.Telegram;
-      const webApp = tg?.WebApp;
-      const initData = webApp?.initDataUnsafe;
-
-      setDebugDetails({
-        telegram: tg ? 'Telegram object found' : '❌ Telegram not found',
-        webApp: webApp ? 'WebApp object found' : '❌ WebApp not found',
-        initDataUnsafe: initData ? 'initDataUnsafe found' : '❌ initDataUnsafe not found',
-      });
-    }
-  }, []);
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen text-xl font-medium text-center px-4">
+      <div className="flex flex-col items-center justify-center h-screen text-center px-4 text-base">
         <p>Loading user data...</p>
         <p className="text-sm text-gray-500 mt-2">
-          If this doesn&apos;t load, please make sure you&apos;re opening the app from inside Telegram.
+          If this doesnt load please make sure youre opening the app from inside Telegram.
         </p>
 
-        <div className="mt-6 w-full max-w-2xl text-left text-xs space-y-4">
-          <div className="bg-gray-100 p-3 rounded">
-            <strong>✅ Debug Log:</strong>
-            <ul className="mt-1 list-disc list-inside text-gray-700">
-              {debugLog.map((msg, i) => (
-                <li key={i}>{msg}</li>
-              ))}
-            </ul>
-          </div>
+        <div className="mt-6 bg-gray-100 p-4 rounded-md w-full max-w-md text-left text-xs">
+          <strong className="block mb-1">✅ Debug Log:</strong>
+          <ul className="list-disc list-inside text-gray-700 space-y-1">
+            {debugLog.map((msg, i) => (
+              <li key={i}>{msg}</li>
+            ))}
+          </ul>
+        </div>
 
-          <div className="bg-gray-50 p-3 rounded overflow-x-auto">
-            <strong>🧠 window.Telegram:</strong>
-            <pre className="whitespace-pre-wrap break-words">{debugDetails.telegram}</pre>
-          </div>
-
-          <div className="bg-gray-50 p-3 rounded overflow-x-auto">
-            <strong>🧩 Telegram.WebApp:</strong>
-            <pre className="whitespace-pre-wrap break-words">{debugDetails.webApp}</pre>
-          </div>
-
-          <div className="bg-gray-50 p-3 rounded overflow-x-auto">
-            <strong>📦 initDataUnsafe:</strong>
-            <pre className="whitespace-pre-wrap break-words">{debugDetails.initDataUnsafe}</pre>
-          </div>
+        <div className="mt-4 bg-gray-50 p-3 rounded text-left text-xs w-full max-w-md">
+           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          <div>window.Telegram: {typeof window !== 'undefined' && (window as any).Telegram ? '✅' : '❌'}</div>
+           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          <div>Telegram.WebApp: {typeof window !== 'undefined' && (window as any).Telegram?.WebApp ? '✅' : '❌'}</div>
+           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          <div>initDataUnsafe: {typeof window !== 'undefined' && (window as any).Telegram?.WebApp?.initDataUnsafe ? '✅' : '❌'}</div>
         </div>
       </div>
     );
